@@ -10,6 +10,23 @@ minerals_table.py - will create a database containing many minerals along with w
 
 minerals.txt - what minerals you would like to query
 
-The USGS spectra library is supposed to be here, but in the words of GitHub, "Yowza, that’s a big file. Try again with a file smaller than 25MB." I will link where it can be found: https://crustal.usgs.gov/speclab/QueryAll07a.php (click where it says "usgs_splib07.zip"). Place it in the same directory as minerals_table.py This is needed in order for the code to ru!
+The USGS spectra library is supposed to be here, but in the words of GitHub, "Yowza, that’s a big file. Try again with a file smaller than 25MB." I will link where it can be found: https://crustal.usgs.gov/speclab/QueryAll07a.php (click where it says "usgs_splib07.zip"). Place it in the same directory as minerals_table.py This is needed in order for the code to run!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Note JPL stands for Joy, Peace, and Love (I did not come up with this)
