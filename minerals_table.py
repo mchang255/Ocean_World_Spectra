@@ -1,11 +1,15 @@
+#This program takes all the minerals, so far just the USGS speclib, and compiles their wavelength, reflectance data, along with other miscellaneous information about the mineral (i.e. chemical formula). The program also plots the wavelength, reflectance data. In the process of actually making a database since current info is stored in lists and the program has to be run every time
+#This program will most likely be split up into three programs - one for creating the database, one for updating the database, and one for querying the minerals
+#To run this program, make sure you are in the directory of the program and minerals.txt and type 'python minerals_table.py' in the terminal
+
 import numpy as np
 import os
 import re
 from urllib.request import urlopen
-from bs4 import BeautifulSoup
 import requests
 from subprocess import call
 import matplotlib.pyplot as plt
+import subprocess
 
 #https://stackoverflow.com/questions/5419204/index-of-duplicates-items-in-a-python-list - this function tells what indices are duplicates in a list
 def list_duplicates_of(seq,item):
@@ -22,7 +26,7 @@ def list_duplicates_of(seq,item):
     return locs
 
 #For minerals found in USGS database
-#loading in viles
+#loading in files
 usgs_dir = os.path.relpath(os.path.join(os.path.dirname(__file__),'usgs_splib07','ASCIIdata','ASCIIdata_splib07a'))
 
 wavelengths = np.loadtxt(os.path.join(usgs_dir,'splib07a_Wavelengths_NIC4_Nicolet_1.12-216microns.txt'), skiprows=1, unpack=True)
@@ -36,6 +40,7 @@ reflectances = []
 names = []
 relevant_wavelengths = []
 samp_purity = []
+samp_id = []
 
 
 for i in range(len(all_minerals)):
@@ -48,35 +53,54 @@ for i in range(len(all_minerals)):
         reflectances.append(channel_reflectance)
         relevant_wavelengths.append(channel_wavelengths)
         
-        names.append(all_minerals[i].split('_')[1]) #attempting to get chemical formulas by searching their USGS pages                                                     and finding the formula. However, the current method I'm using for                                                     some reason doesn't produce the full HTML page...
+        new_name = all_minerals[i].split('_')[1]
+        
+        names.append(new_name) #attempting to get chemical formulas by searching their USGS pages and finding the formula. However, the current method I'm using for some reason doesn't produce the full HTML page...
         
         new_replacement = all_minerals[i].replace('.txt', '.html')
         new_replacement = new_replacement[9:]
         
         samp_purity.append(all_minerals[i].split('_')[-2])
         
-        #link = "https://crustal.usgs.gov/speclab/data/HTMLmetadata/" + new_replacement
+        result = re.search(new_name + '_(.*)_NIC', all_minerals[i])
+            
+        samp_id.append(result.group(1))
         
+        #Getting chemical formula of mineral by going to the USGS page for each of the mineral
         
+        link = "https://crustal.usgs.gov/speclab/data/HTMLmetadata/" + new_replacement
         
-#         link = "https://en.wikipedia.org/wiki/" + all_minerals[i].split('_')[1]
+        link = link.replace('(', '\(')
+        link = link.replace(')', '\)')
+        link = link.replace('%', 'percent')
+        link = link.replace('#', '%23')
         
-#         call('echo ' + link + '', shell=True)
+        call('echo ' + link + '', shell=True)
         
-#         call('curl --silent ' + link, shell=True)
+        formula = subprocess.check_output('w3m -dump ' + link + ' | grep \'FORMULA:\' | sed \'s/FORMULA://\' | tr -d "[:blank:]"', shell=True) #brew install w3m if you don't have it
+        formula = str(formula)
+        formula = formula.replace('b\'', '')
+        formula = formula.replace('\\n\'', '')
+        
+        print(formula)
+        
+        chemical_formulas.append(formula)
 
 #if minerals have multiple entries, we will choose the sample that is the most pure. We are going by this guide: https://pubs.usgs.gov/ds/1035/ds1035.pdf, page 8. In short, for the NIC4 spectrometer, spectral purity is designated either with a single character for the wavelength range 1.12–6 μm, with two characters for the wavelength ranges 1.12–6 and 6–25 μm, or with three characters for the wavelength ranges 1.12–6, 6–25, and 25–150 μm. For wavelengths longer than 150 μm, spectral purity has not been evaluated (Ex: NIC4aaa).
-#What each of the letters mean
+#What each of the letters mean:
 # a: The spectrum and sample are pure based on significant supporting data available to the authors. The sample purity from other methods (for example, XRD or microscopic examination) indicate that no contaminants are present. Spectrally, no contaminants are apparent
 # b: The spectrum of the sample appears pure. However, other sample analyses indicate the presence of other contaminants that may affect reflectance levels to some degree but do not add any significant spectral features in the region evaluated. The spectral features of the primary minerals may have slightly altered intensities, but the feature positions and shapes should be representative
 # c: The spectrum has some weak features with depths of a few percent or less caused by other contaminants.
 # d:  Significant spectral contamination. The spectrum is included in the library only because it is the best sample of its type currently available, and because the primary spectral features can still be recognized
 # u: There are insufficient analyses or knowledge (or both) of the spectral properties of this material to evaluate its spectral purity. In general, we have included such samples because we believe their spectra to be representative.
+#Some minerals have multiple samples. We want to choose the sample that contains the most information, meaning sample purities assessed for all three regions. If a mineral doesn't have purities for all three regions, we will go with the sample that has two regions assessed, and so on. From there, we choose then choose the sample that is the most pure. Some minerals will have several samples that have the same purity. We will add all of those samples to the database as they may be different grain sizes or their data might be different due to other circumstances.
 
 purest_names = []
 purest_wavelengths = []
 purest_reflectances = []
 purest_purities = []
+purest_id = []
+purest_formulas = []
 res = []
 
 
@@ -92,116 +116,78 @@ for i in res:
 
 more_duplicates = []
 
-
-#getting rid of duplicates and extracting the purest sample. the criteria for greatest purity is if two samples have the same number of characters for purities, then we choose the sample that has most amount of "least-valued" (ex: a would beat c) characters.
-#if two sample don't have the same amount of characters, then we will go with the sample that has the most amount of characters??
-#THIS WILL PROBABLY BE DELETED
-# for n in range(len(duplicates)):
-#     if len(duplicates[n]) > 1:
-#         for k in range(len(duplicates[n])):
-#             current_samp = samp_purity[duplicates[n][k]]
-#             print(names[duplicates[n][k]] + ' has a spectrometer code ' + current_samp + ' and index ' + str(duplicates[n][k]))
-#             if k == 0:
-#                 purest_samp = samp_purity[duplicates[n][0]]
-#                 purest_index = duplicates[n][k]
-#                 continue
-#             else:
-#                 current_sum = sum([ord(l) for l in current_samp]) #taken from https://stackoverflow.com/questions/28182454/multiple-characters-in-python-ord-function
-#                 purest_sum = sum(ord(m) for m in purest_samp)
-                
-#                 print('(Current sum) The sum of ' + current_samp + ' is ' + str(current_sum))
-#                 print('(Pure sum) The sum of ' + purest_samp + ' is ' + str(purest_sum))
-                
-#                 if current_sum > purest_sum:
-#                     continue
-#                 else:
-#                     purest_samp = samp_purity[duplicates[n][k]]
-#                     purest_index = duplicates[n][k]
-#         print('The purest sample has a spectrometer code of ' + str(samp_purity[purest_index]))
-#         purest_names.append(names[purest_index])
-#         purest_wavelengths.append(relevant_wavelengths[purest_index])
-#         purest_reflectances.append(reflectances[purest_index])
-#         purest_purities.append(samp_purity[purest_index])
-#     else:
-#         purest_names.append(names[duplicates[n][0]])
-#         purest_wavelengths.append(relevant_wavelengths[duplicates[n][0]])
-#         purest_reflectances.append(reflectances[duplicates[n][0]])
-#         purest_purities.append(samp_purity[duplicates[n][0]])
-        
 for n in range(len(duplicates)):
+    pure_samp_codes = []
+    pure_samp_codes_length = []
     if len(duplicates[n]) > 1:
         for k in range(len(duplicates[n])):
-            current_samp = samp_purity[duplicates[n][k]]
-            print(names[duplicates[n][k]] + ' has a spectrometer code ' + current_samp + ' and index ' + str(duplicates[n][k]))
-            if k == 0:
-                purest_samp = samp_purity[duplicates[n][0]]
-                purest_index = duplicates[n][k]
-                continue
-            else:
-                if len(purest_samp) > len(current_samp):
-                    continue
-                elif len(purest_samp) < len(current_samp):
-                    purest_samp = samp_purity[duplicates[n][k]]
-                    purest_index = duplicates[n][k]
-                elif len(purest_samp) == len(current_samp):
-                    current_sum = sum([ord(l) for l in current_samp]) #taken from https://stackoverflow.com/questions/28182454/multiple-characters-in-python-ord-function
-                    purest_sum = sum(ord(m) for m in purest_samp)
-
-                    print('(Current sum) The sum of ' + current_samp + ' is ' + str(current_sum))
-                    print('(Pure sum) The sum of ' + purest_samp + ' is ' + str(purest_sum))
-
-                    if current_sum > purest_sum:
-                        continue
-                    elif current_sum < purest_sum:
-                        purest_samp = samp_purity[duplicates[n][k]]
-                        purest_index = duplicates[n][k]
-                    elif purest_sum == current_sum:
-                        purest_samp = samp_purity[duplicates[n][k]]
-                        purest_index = duplicates[n][k]
-                        
-        print('The purest sample has a spectrometer code of ' + str(samp_purity[purest_index]))
-        purest_names.append(names[purest_index])
-        purest_wavelengths.append(relevant_wavelengths[purest_index])
-        purest_reflectances.append(reflectances[purest_index])
-        purest_purities.append(samp_purity[purest_index])
+            samps = samp_purity[duplicates[n][k]]
+            pure_samp_codes.append(samps)
+            
+        for s in range(len(pure_samp_codes)):
+            length_string = len(pure_samp_codes[s])
+            pure_samp_codes_length.append(length_string)
+            
+        most_specific = np.max(pure_samp_codes_length)
+        index_longest = list_duplicates_of(pure_samp_codes_length,most_specific)
+        
+        sums = []
+        
+        for r in index_longest:
+            purity_sum = sum(ord(l) for l in pure_samp_codes[r])
+            print(pure_samp_codes[r])
+            print(purity_sum)
+            sums.append(purity_sum)
+        
+        most_pure = np.min(sums)
+        purest_index = list_duplicates_of(sums,most_pure)
+        
+        for q in purest_index:
+            index_to_use = duplicates[n][index_longest[q]]
+            purest_names.append(names[index_to_use])
+            purest_wavelengths.append(relevant_wavelengths[index_to_use])
+            purest_reflectances.append(reflectances[index_to_use])
+            purest_purities.append(samp_purity[index_to_use])
+            purest_id.append(samp_id[index_to_use])
+            purest_formulas.append(chemical_formulas[index_to_use])
     else:
         purest_names.append(names[duplicates[n][0]])
         purest_wavelengths.append(relevant_wavelengths[duplicates[n][0]])
         purest_reflectances.append(reflectances[duplicates[n][0]])
         purest_purities.append(samp_purity[duplicates[n][0]])
+        purest_id.append(samp_id[duplicates[n][0]])
+        purest_formulas.append(chemical_formulas[duplicates[n][0]])
                     
                     
                     
         
 for j in range(len(purest_names)):
-    print(purest_names[j] + ' has indices of ' + str(list_duplicates_of(purest_names,purest_names[j])))
+    print(purest_names[j] + ' has purity codes of ' + purest_purities[j] + '. Its sample ID: ' + purest_id[j])
 
 
 minerals = np.loadtxt('minerals.txt', unpack=True, dtype=str)
 
-#Querying minerals
+#Querying minerals - will output a file containing the wavelength and reflectance data + plot
+#Might be moved to a different Python program or replaced once we have the database working
 for w in range(len(minerals)):
     for x in range(len(purest_names)):
         if minerals[w] == purest_names[x]:
-            same_name = (np.array(purest_names) == minerals[w])
-            wave_out = np.array(purest_wavelengths)[same_name]
-            refl_out = np.array(purest_reflectances)[same_name]
             
-            list_wave_out = wave_out.tolist()
-            list_refl_out = refl_out.tolist()
+            wave_out = purest_wavelengths[x]
+            refl_out = purest_reflectances[x]
+            id_out = purest_id[x]
+            formula_out = purest_formulas[x]
             
-            print(list_wave_out)
-            
-            data = list(zip(wave_out[0], refl_out[0]))
-            top = minerals[w] + '\n'
+            data = list(zip(wave_out, refl_out))
+            top = minerals[w] + ', Chemical Formula: ' + str(formula_out) + '\n'
+            top += 'Sample ID: ' + id_out + '\n'
             top += 'wavelengths (microns), reflectance'
-            file_name = minerals[w] + '.txt'
+            file_name = minerals[w] + '_' + id_out + '.txt'
             np.savetxt(file_name, data, fmt='%s', delimiter = ', ', header=top)
             
-            plt.figure(w)
-            plt.plot(wave_out[0], refl_out[0])
+            plt.figure(x)
+            plt.plot(wave_out, refl_out)
             plt.xlabel('Wavelengths (microns)')
             plt.ylabel('Reflectance')
-            plt.title(minerals[w] + ': Reflectance vs. Wavelength')
-            plt.savefig(minerals[w] + '.png', dpi=150)
-        
+            plt.title(minerals[w] + ', ' + id_out + ': Reflectance vs. Wavelength')
+            plt.savefig(minerals[w] + '_' + id_out + '.png', dpi=150)
