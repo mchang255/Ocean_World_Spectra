@@ -5,6 +5,7 @@ Where I upload everything JPL!
 This respository mainly concerns research in finding surface compositions of ocean worlds in our Solar System (Ceres, Europa, etc.)
 
 All the code I have:
+
 create_table.py - creates the database and table that houses the minerals' information.
 
 delete_db.py - wipes out existence of database and table. Might be used if you want to start over.
