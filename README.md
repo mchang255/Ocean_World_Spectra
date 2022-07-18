@@ -17,10 +17,17 @@ query_minerals.py - getting the information of the minerals you want from the da
 minerals.txt - what minerals you would like to query. NOT case sensitive, so write however you please (although please spell correctly :) ).
 
 STEPS TO RUN THE CODE:
+IF THIS IS YOUR FIRST TIME:
 1. create_table.py
 2. populate_table.py
 3. query_minerals.py
 delete_db.py is optional
+
+EVERY TIME AFTER:
+just query_minerals.py
+delete_db.py is optional
+
+If you have more information to add to the table...well, I might add an extra file or you will have to modify create_table.py and populate_table.py.
 
 OTHER IMPORTANT INFORMATION YOU SHOULD KNOW (especially important is marked with **):
 
