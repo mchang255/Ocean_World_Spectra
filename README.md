@@ -25,6 +25,7 @@ delete_db.py is optional
 
 EVERY TIME AFTER:
 just query_minerals.py
+
 delete_db.py is optional
 
 If you have more information to add to the table...well, I might add an extra file or you will have to modify create_table.py and populate_table.py.
