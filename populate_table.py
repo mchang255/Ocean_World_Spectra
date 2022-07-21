@@ -1,7 +1,7 @@
 #The purpose of this code is to populate the table with the information we have. So far, we just have the USGS speclib, and this program compiles their wavelength, reflectance data, along with other miscellaneous information about the mineral (i.e. chemical formula)
 #To run this file, make sure you are in the same directory as the file and type "python populate_table.py" in the terminal window
 #Make sure you have run create_table.py first as we need to have the database and table already set up
-#Make sure you have the USGS library downloaded
+#Make sure you have the appropriate mineral files downloaded. Go here: https://crustal.usgs.gov/speclab/QueryAll07a.php?
 #This code should only be run once as running again will cause duplicates in the table. Should you need to run this code again, please run delete_db.py first and then create_table.py.
 
 import numpy as np
@@ -29,13 +29,11 @@ def list_duplicates_of(seq,item):
 
 #For minerals found in USGS database
 #loading in files
-usgs_dir = os.path.relpath(os.path.join(os.path.dirname(__file__),'usgs_splib07','ASCIIdata','ASCIIdata_splib07a'))
+usgs_dir = os.path.relpath(os.path.join(os.path.dirname(__file__),'minerals'))
 
 wavelengths = np.loadtxt(os.path.join(usgs_dir,'splib07a_Wavelengths_NIC4_Nicolet_1.12-216microns.txt'), skiprows=1, unpack=True)
 
-minerals_dir = os.path.relpath(os.path.join(usgs_dir,'ChapterM_Minerals'))
-
-all_minerals = os.listdir(minerals_dir)
+all_minerals = os.listdir(usgs_dir)
 
 chemical_formulas = []
 reflectances = []
@@ -47,7 +45,7 @@ samp_id = []
 
 for i in range(len(all_minerals)):
     if 'RREF' in all_minerals[i]:
-        reflectance = np.loadtxt(os.path.join(minerals_dir, all_minerals[i]), skiprows=1, unpack=True)
+        reflectance = np.loadtxt(os.path.join(usgs_dir, all_minerals[i]), skiprows=1, unpack=True)
         channel_BA = (reflectance != -1.2300000e+034) #if one of the channels is this value, that means it is strongly affected by atmospheric absorption and must have been deleted
         channel_wavelengths = wavelengths[channel_BA] #getting the relevant wavelengths that have values for                                                                  reflectance
         channel_reflectance = reflectance[channel_BA]
@@ -100,73 +98,73 @@ for i in range(len(all_minerals)):
 # u: There are insufficient analyses or knowledge (or both) of the spectral properties of this material to evaluate its spectral purity. In general, we have included such samples because we believe their spectra to be representative.
 #Some minerals have multiple samples. We want to choose the sample that contains the most information, meaning sample purities assessed for all three regions. If a mineral doesn't have purities for all three regions, we will go with the sample that has two regions assessed, and so on. From there, we choose then choose the sample that is the most pure. Some minerals will have several samples that have the same purity. We will add all of those samples to the database as they may be different grain sizes or their data might be different due to other circumstances.
 
-purest_names = []
-purest_wavelengths = []
-purest_reflectances = []
-purest_purities = []
-purest_id = []
-purest_formulas = []
-res = []
+# purest_names = []
+# purest_wavelengths = []
+# purest_reflectances = []
+# purest_purities = []
+# purest_id = []
+# purest_formulas = []
+# res = []
 
 
-for j in range(len(names)): #seeing what minerals have multiple entries
-    print(names[j] + ' has indices of ' + str(list_duplicates_of(names,names[j])))
-    indices = list_duplicates_of(names,names[j])
-    res.append(indices)
+# for j in range(len(names)): #seeing what minerals have multiple entries
+#     print(names[j] + ' has indices of ' + str(list_duplicates_of(names,names[j])))
+#     indices = list_duplicates_of(names,names[j])
+#     res.append(indices)
     
-duplicates = []
-for i in res:
-    if i not in duplicates:
-        duplicates.append(i)
+# duplicates = []
+# for i in res:
+#     if i not in duplicates:
+#         duplicates.append(i)
 
-more_duplicates = []
+# more_duplicates = []
 
-#selecting the most pure sample
-for n in range(len(duplicates)):
-    pure_samp_codes = []
-    pure_samp_codes_length = []
-    if len(duplicates[n]) > 1: #if there's more than one sample
-        for k in range(len(duplicates[n])):
-            samps = samp_purity[duplicates[n][k]]
-            pure_samp_codes.append(samps)
+# #selecting the most pure sample
+# for n in range(len(duplicates)):
+#     pure_samp_codes = []
+#     pure_samp_codes_length = []
+#     if len(duplicates[n]) > 1: #if there's more than one sample
+#         for k in range(len(duplicates[n])):
+#             samps = samp_purity[duplicates[n][k]]
+#             pure_samp_codes.append(samps)
             
-        for s in range(len(pure_samp_codes)):
-            length_string = len(pure_samp_codes[s])
-            pure_samp_codes_length.append(length_string)
+#         for s in range(len(pure_samp_codes)):
+#             length_string = len(pure_samp_codes[s])
+#             pure_samp_codes_length.append(length_string)
             
-        most_specific = np.max(pure_samp_codes_length)
-        index_longest = list_duplicates_of(pure_samp_codes_length,most_specific)
+#         most_specific = np.max(pure_samp_codes_length)
+#         index_longest = list_duplicates_of(pure_samp_codes_length,most_specific)
         
-        sums = []
+#         sums = []
         
-        for r in index_longest:
-            purity_sum = sum(ord(l) for l in pure_samp_codes[r])
-            print(pure_samp_codes[r])
-            print(purity_sum)
-            sums.append(purity_sum)
+#         for r in index_longest:
+#             purity_sum = sum(ord(l) for l in pure_samp_codes[r])
+#             print(pure_samp_codes[r])
+#             print(purity_sum)
+#             sums.append(purity_sum)
         
-        most_pure = np.min(sums)
-        purest_index = list_duplicates_of(sums,most_pure)
+#         most_pure = np.min(sums)
+#         purest_index = list_duplicates_of(sums,most_pure)
         
-        for q in purest_index:
-            index_to_use = duplicates[n][index_longest[q]]
-            purest_names.append(names[index_to_use])
-            purest_wavelengths.append(relevant_wavelengths[index_to_use])
-            purest_reflectances.append(reflectances[index_to_use])
-            purest_purities.append(samp_purity[index_to_use])
-            purest_id.append(samp_id[index_to_use])
-            purest_formulas.append(chemical_formulas[index_to_use])
-    else:
-        purest_names.append(names[duplicates[n][0]])
-        purest_wavelengths.append(relevant_wavelengths[duplicates[n][0]])
-        purest_reflectances.append(reflectances[duplicates[n][0]])
-        purest_purities.append(samp_purity[duplicates[n][0]])
-        purest_id.append(samp_id[duplicates[n][0]])
-        purest_formulas.append(chemical_formulas[duplicates[n][0]])
+#         for q in purest_index:
+#             index_to_use = duplicates[n][index_longest[q]]
+#             purest_names.append(names[index_to_use])
+#             purest_wavelengths.append(relevant_wavelengths[index_to_use])
+#             purest_reflectances.append(reflectances[index_to_use])
+#             purest_purities.append(samp_purity[index_to_use])
+#             purest_id.append(samp_id[index_to_use])
+#             purest_formulas.append(chemical_formulas[index_to_use])
+#     else:
+#         purest_names.append(names[duplicates[n][0]])
+#         purest_wavelengths.append(relevant_wavelengths[duplicates[n][0]])
+#         purest_reflectances.append(reflectances[duplicates[n][0]])
+#         purest_purities.append(samp_purity[duplicates[n][0]])
+#         purest_id.append(samp_id[duplicates[n][0]])
+#         purest_formulas.append(chemical_formulas[duplicates[n][0]])
                   
         
-for j in range(len(purest_names)):
-    print(purest_names[j] + ' has purity codes of ' + purest_purities[j] + '. Its sample ID: ' + purest_id[j])
+# for j in range(len(purest_names)):
+#     print(purest_names[j] + ' has purity codes of ' + purest_purities[j] + '. Its sample ID: ' + purest_id[j])
     
 #for RRUFF data
 # rruff_dir = os.path.relpath(os.path.join(os.path.dirname(__file__),'rruff'))
@@ -200,8 +198,8 @@ conn = sqlite3.connect('minspec.db')
 
 c = conn.cursor()
 
-for a in range(len(purest_names)):
-    c.execute("INSERT INTO minerals VALUES ('" + purest_names[a] + "', '" + purest_formulas[a] + "', '" + purest_id[a] + "', '" + purest_purities[a] + "', '" + str(list(purest_wavelengths[a])) + "', '" + str(list(purest_reflectances[a])) + "')")
+for a in range(len(names)):
+    c.execute("INSERT INTO minerals VALUES ('" + names[a] + "', '" + chemical_formulas[a] + "', '" + samp_id[a] + "', '" + samp_purity[a] + "', '" + str(list(relevant_wavelengths[a])) + "', '" + str(list(reflectances[a])) + "')")
 
 conn.commit()
 
