@@ -1,34 +1,34 @@
 #This file creates the database and table that belongs in the database. The table will contain minerals' data and information
-#Make sure you have mysql downloaded as that is important for housing the database! Download here: https://dev.mysql.com/downloads/mysql/ and select the appropriate package for your computer model
 #To run this file, make sure you are in the same directory as the file and type "python create_table.py" in the terminal window
 #As of now, the database will stay local to whoever runs the code. We might move the database to shared server where it is only in one place
 #This code should only be run once as attempting to create another database with the same name will bring errors. Should you need to run this code again, please run delete_db.py first
 
-import mysql.connector
+import sqlite3
 
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="minspec22"
+conn = sqlite3.connect('minspec.db') #connecting to database
+
+c = conn.cursor() #create cursor
+
+#create a table
+c.execute("""CREATE TABLE minerals (
+    name text,
+    chemical_formula text,
+    sampleID text,
+    sample_purity text,
+    wavelengths JSON,
+    reflectances JSON
 )
+""")
 
-print(mydb)
-mycursor = mydb.cursor()
+# Datatypes:
+# NULL
+# INTEGER
+# REAL - FOR DECIMALS
+# TEXT
+# BLOB
 
-mycursor.execute("CREATE DATABASE minspec") #creating database
+# Commit our command
+conn.commit()
 
-mycursor.execute("SHOW DATABASES")
-
-for db in mycursor:
-    print(db)
-    
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="minspec22",
-  database="minspec"
-)
-
-mycursor = mydb.cursor()
-    
-mycursor.execute("CREATE TABLE minerals (name VARCHAR(255), chemical_formula VARCHAR(255), sampleID VARCHAR(255), sample_purity VARCHAR(255), wavelengths JSON, reflectances JSON)") #creating table
+# Close our connection
+conn.close()

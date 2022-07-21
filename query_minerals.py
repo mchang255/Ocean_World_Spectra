@@ -3,30 +3,25 @@
 #To run this file, make sure you are in the same directory as the file and type "python query_minerals.py" in the terminal window
 #You can run this program as many times as you want
 
-import mysql.connector
 import numpy as np
 import os
 import re
 import requests
 from subprocess import call
 import matplotlib.pyplot as plt
+import sqlite3
 
 minerals = np.loadtxt('minerals.txt', unpack=True, dtype=str)
 
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="minspec22",
-  database="minspec"
-)
+conn = sqlite3.connect('minspec.db')
 
-mycursor = mydb.cursor()
+c = conn.cursor()
 
 for w in range(len(minerals)):
     minerals[w] = minerals[w].lower()
     minerals[w] = minerals[w].capitalize()
-    mycursor.execute("SELECT * FROM minerals WHERE name='" + minerals[w] + "'") #finding the mineral we want in our database
-    myresult = mycursor.fetchall()
+    c.execute("SELECT * FROM minerals WHERE name LIKE '" + minerals[w] + "'") #finding the mineral we want in our database
+    myresult = c.fetchall()
     for result in myresult:
         wavelengths = result[4][1:-1].split(', ')
         

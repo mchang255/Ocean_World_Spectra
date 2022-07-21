@@ -4,7 +4,6 @@
 #Make sure you have the USGS library downloaded
 #This code should only be run once as running again will cause duplicates in the table. Should you need to run this code again, please run delete_db.py first and then create_table.py.
 
-import mysql.connector
 import numpy as np
 import os
 import re
@@ -12,6 +11,7 @@ import requests
 from subprocess import call
 import matplotlib.pyplot as plt
 import subprocess
+import sqlite3
 
 #https://stackoverflow.com/questions/5419204/index-of-duplicates-items-in-a-python-list - this function tells what indices are duplicates in a list
 def list_duplicates_of(seq,item):
@@ -167,18 +167,42 @@ for n in range(len(duplicates)):
         
 for j in range(len(purest_names)):
     print(purest_names[j] + ' has purity codes of ' + purest_purities[j] + '. Its sample ID: ' + purest_id[j])
+    
+#for RRUFF data
+# rruff_dir = os.path.relpath(os.path.join(os.path.dirname(__file__),'rruff'))
+# all_rruff_minerals = os.listdir(rruff_dir)
+
+# for k in range(len(all_rruff_minerals)):
+#     wavenumbers, refl = np.loadtxt(os.path.join(rruff_dir, all_rruff_minerals[i]), unpack=True)
+#     waves = wavenumbers / 10000 #converting to wavenumber to wavelength (microns)
+    
+#     with open(os.path.join(rruff_dir, all_rruff_minerals[i]), 'r') as file:
+#         lines = file.readlines()
+#         for line in lines:
+#             index = line.find('=')
+#             if 'NAMES' in line[:index]:
+#                 name = str(line[index+1:].strip())
+#             if 'RRUFFID' in line[:index]:
+#                 i_d = str(line[index+1:].strip())
+#             if 'IDEAL CHEMISTRY' in line[:index]:
+#                 chem = str(line[index+1:].strip())
+                
+#     purest_names.append(name)
+#     purest_wavelengths.append(waves)
+#     purest_reflectances.append(refl)
+#     purest_purities.append('Not given for RRUFF')
+#     purest_id.append(i_d)
+#     purest_formulas.append(chem)
+        
 
 #adding info to database
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="minspec22",
-  database="minspec"
-)
+conn = sqlite3.connect('minspec.db')
 
-mycursor = mydb.cursor()
+c = conn.cursor()
 
 for a in range(len(purest_names)):
-    mycursor.execute("INSERT INTO minerals (name, chemical_formula, sampleID, sample_purity, wavelengths, reflectances) VALUES ('" + purest_names[a] + "', '" + purest_formulas[a] + "', '" + purest_id[a] + "', '" + purest_purities[a] + "', '" + str(list(purest_wavelengths[a])) + "', '" + str(list(purest_reflectances[a])) + "')")
+    c.execute("INSERT INTO minerals VALUES ('" + purest_names[a] + "', '" + purest_formulas[a] + "', '" + purest_id[a] + "', '" + purest_purities[a] + "', '" + str(list(purest_wavelengths[a])) + "', '" + str(list(purest_reflectances[a])) + "')")
 
-mydb.commit()
+conn.commit()
+
+conn.close()
