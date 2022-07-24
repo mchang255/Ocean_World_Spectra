@@ -35,7 +35,7 @@ OTHER IMPORTANT INFORMATION YOU SHOULD KNOW (especially important is marked with
 
 **w3m is a Unix command that is used in populate_table.py to fetch the chemistry of minerals we found in USGS by going to the web page and extracting the formula. I don't believe this is command is automatically installed on all computers. One way to install is doing brew install w3m. You can also try sudo apt install w3m.
 
-If minerals have multiple entries, we will choose the sample that is the most pure. We are going by this guide: https://pubs.usgs.gov/ds/1035/ds1035.pdf, page 8. In short, for the NIC4 spectrometer, spectral purity is designated either with a single character for the wavelength range 1.12–6 μm, with two characters for the wavelength ranges 1.12–6 and 6–25 μm, or with three characters for the wavelength ranges 1.12–6, 6–25, and 25–150 μm. For wavelengths longer than 150 μm, spectral purity has not been evaluated (Ex: NIC4aaa). 
+FOR USGS, if minerals have multiple entries, we will choose the sample that is the most pure. We are going by this guide: https://pubs.usgs.gov/ds/1035/ds1035.pdf, page 8. In short, for the NIC4 spectrometer, spectral purity is designated either with a single character for the wavelength range 1.12–6 μm, with two characters for the wavelength ranges 1.12–6 and 6–25 μm, or with three characters for the wavelength ranges 1.12–6, 6–25, and 25–150 μm. For wavelengths longer than 150 μm, spectral purity has not been evaluated (Ex: NIC4aaa). 
 
 What each of the letters mean:
 
