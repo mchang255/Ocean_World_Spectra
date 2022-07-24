@@ -11,7 +11,7 @@ from subprocess import call
 import matplotlib.pyplot as plt
 import sqlite3
 
-minerals = np.loadtxt('minerals.txt', unpack=True, dtype=str)
+minerals = np.loadtxt('minerals.txt', unpack=True, dtype=str, ndmin=1)
 
 conn = sqlite3.connect('minspec.db')
 
@@ -24,14 +24,14 @@ for w in range(len(minerals)):
     myresult = c.fetchall()
     for result in myresult:
         wavelengths = result[4][1:-1].split(', ')
-        
+
         for a in range(len(wavelengths)):
             wavelengths[a] = float(wavelengths[a])
-        
+
         reflectances = result[5][1:-1].split(', ')
         for b in range(len(reflectances)):
             reflectances[b] = float(reflectances[b])
-        
+
         #putting data into txt file
         data = list(zip(wavelengths, reflectances))
         top = result[0] + ', Chemical Formula: ' + str(result[1]) + '\n'
@@ -39,13 +39,15 @@ for w in range(len(minerals)):
         top += 'wavelengths (microns), reflectance'
         file_name = result[0] + '_' + result[2] + '.txt'
         np.savetxt(file_name, data, fmt='%s', delimiter = ', ', header=top)
-        
+
         #plotting data
         plt.plot(wavelengths, reflectances)
         plt.xlabel('Wavelengths (microns)')
         plt.ylabel('Reflectance')
         plt.title(result[0] + ', ' + result[2] + ': Reflectance vs. Wavelength')
         plt.savefig(result[0] + '_' + result[2] + '.png', dpi=150)
-        
+
         plt.clf()
         plt.cla()
+
+        

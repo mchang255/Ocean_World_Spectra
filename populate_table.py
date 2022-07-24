@@ -29,7 +29,9 @@ def list_duplicates_of(seq,item):
 
 #For minerals found in USGS database
 #loading in files
-usgs_dir = os.path.relpath(os.path.join(os.path.dirname(__file__),'minerals'))
+usgs_dir = os.path.relpath(os.path.join(os.path.dirname(__file__),'usgs'))
+
+call ('rm -rf ' + usgs_dir + '/.ipynb_checkpoints', shell=True)
 
 wavelengths = np.loadtxt(os.path.join(usgs_dir,'splib07a_Wavelengths_NIC4_Nicolet_1.12-216microns.txt'), skiprows=1, unpack=True)
 
@@ -89,6 +91,35 @@ for i in range(len(all_minerals)):
         
         chemical_formulas.append(formula)
         
+#For minerals found in RRUFF
+rruff_dir = os.path.relpath(os.path.join(os.path.dirname(__file__),'rruff'))
+
+call ('rm -rf ' + rruff_dir + '/.ipynb_checkpoints', shell=True)
+all_minerals_rruff = os.listdir(rruff_dir)
+
+for j in range(len(all_minerals_rruff)):
+    rruff_file = os.path.join(rruff_dir, all_minerals_rruff[j])
+    rruff_wavenum, rruff_refl = np.loadtxt(rruff_file, delimiter = ", ", unpack=True)
+    rruff_wavelength = 10000 / rruff_wavenum
+    
+    with open(rruff_file, 'r') as rruff:
+        lines = rruff.readlines()
+        for line in lines:
+            index = line.find('=')
+            if 'NAMES' in line[:index]:
+                rruff_name = str(line[index+1:].strip())
+            elif 'RRUFFID' in line[:index]:
+                rruff_id = str(line[index+1:].strip())
+            elif 'IDEAL CHEMISTRY' in line[:index]:
+                rruff_chem = str(line[index+1:].strip())
+    
+    chemical_formulas.append(rruff_chem)
+    reflectances.append(rruff_refl)
+    names.append(rruff_name)
+    relevant_wavelengths.append(rruff_wavelength)
+    samp_purity.append('Not given by RRUFF')
+    samp_id.append(rruff_id)
+
 
 #adding info to database
 conn = sqlite3.connect('minspec.db')
