@@ -54,6 +54,7 @@ Some minerals have multiple samples. We want to choose the sample that contains 
 Also note that for all Python programs, in order to run the code, type: python file_name into a terminal window and press "Enter." Make sure you (when operating the terminal window) are in the same directory as your files! Otherwise, you will need to specify the path of the file. I should probably put this at the top of every Python program.
 
 Code that we may not need anymore:
+
 minerals_table.py - will create a database containing many minerals along with wavelengths and reflectances (infrared region). When you "ask" for some minerals, those minerals' information will be returned. Still a work in progress
 
 delete_db.py - would have deleted the database but this is not needed anymore as we are using sql3ite not MySQL
