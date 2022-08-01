@@ -13,6 +13,10 @@ import sqlite3
 
 minerals = np.loadtxt('minerals.txt', unpack=True, dtype=str, ndmin=1)
 
+mineral_path = os.path.relpath(os.path.join(os.path.dirname(__file__),'mineral_data'))
+
+os.makedirs(mineral_path, exist_ok = True)
+
 conn = sqlite3.connect('minspec.db')
 
 c = conn.cursor()
@@ -38,14 +42,14 @@ for w in range(len(minerals)):
         top += 'Sample ID: ' + result[2] + '\n'
         top += 'wavelengths (microns), reflectance'
         file_name = result[0] + '_' + result[2] + '.txt'
-        np.savetxt(file_name, data, fmt='%s', delimiter = ', ', header=top)
+        np.savetxt(mineral_path + "/" + file_name, data, fmt='%s', delimiter = ', ', header=top)
 
         #plotting data
         plt.plot(wavelengths, reflectances)
         plt.xlabel('Wavelengths (microns)')
         plt.ylabel('Reflectance')
         plt.title(result[0] + ', ' + result[2] + ': Reflectance vs. Wavelength')
-        plt.savefig(result[0] + '_' + result[2] + '.png', dpi=150)
+        plt.savefig(mineral_path + "/" + result[0] + '_' + result[2] + '.png', dpi=150)
 
         plt.clf()
         plt.cla()
