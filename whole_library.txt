@@ -1,0 +1,38 @@
+#This text file is used in linear_mixing.py, and it specifies what minerals will be part of the "library" that the MCR program will peruse through and select what minerals it thinks are in the mixture
+#In the left column, write the minerals you want. Spell correctly, and for the time-being, capitalize the first letter
+#In the second column, write the ID of the mineral. The ID of the mineral can be found in each of the mineral's data files in mineral_data
+#Separate the columns with a ","
+Alunite,GDS84
+Anhydrite,GDS42
+Antigorite,NMNH96917.a
+Bloedite,GDS147
+Brucite,HS247.3B
+Calcite,WS272
+Cronstedtite,M3542
+Dolomite,HS102.3B
+Enstatite,NMNH128288
+Epsomite,GDS149
+Graphite,R050503
+Gypsum,HS333.3B
+Halite,HS433.3B
+Hydrohalite,NoID
+Hydromagnesite,R060011
+Illite,IMt-1.b
+Jarosite,GDS100
+Lizardite,NMNHR4687.b
+Magnesite,R040114
+Magnetite,HS195.3B
+Mirabilite,GDS150
+Montmorillonite,SWy
+Nahcolite,R070237
+Nesquehonite,R050639
+Pyrite,GDS483.c
+Quartz,R040031
+Siderite,HS271.3B
+Sulfur,GDS94
+Sylvite,R050166
+Talc,GDS23
+Thenardite,GDS146
+Tremolite,HS18.3B
+Trona,GDS148
+Water_Ice,70micron_150K

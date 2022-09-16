@@ -1,0 +1,9 @@
+#This text file is used in percent_error_mixtures.py, and it specifies what minerals you would like to compare the actual and predicted proportions of
+#In every row, please write down the name of the mineral. Capitalize the first letter (for the time-being) and spell correctly
+#VERY IMPORTANT: In the last row, write either "eq" or "frac," to specify if you want to query the fractional or equilibrium mixture
+Gypsum
+#Calcite
+#Dolomite
+Mirabilite
+#Magnesite
+eq

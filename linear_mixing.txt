@@ -1,0 +1,12 @@
+#This text file is used in linear_mixing.py, and it specifies what minerals you would like to use for mixing. 
+#In the left column, write the minerals you want. Spell correctly, and for the time-being, capitalize the first letter
+#In the second column, write the ID of the mineral. The ID of the mineral can be found in each of the mineral's data files in mineral_data
+#Separate the columns with a ","
+#Dolomite,HS102.3B
+#Gypsum,HS333.3B
+#Calcite,WS272
+Mirabilite,GDS150
+#Magnesite,R050676
+Hydromagnesite,R060011
+Ikaite,Ikaite
+Nahcolite,R070237
