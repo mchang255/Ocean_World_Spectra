@@ -76,6 +76,8 @@ Also note that for all Python programs, in order to run the code, type: python f
 
 NONLINEAR MATLAB PROGRAM: Markov Chain Monte Carlo (MCMC) Hapke Program. Currently in the works!
 
+NOTE: There are two different directories for the MCMC programs. One of them has the suffix "original." This is the original code published by Lapôtre et al. The other code is me altering the original and playing around with it (i.e. modifying the code so it can process hundreds of files automatically). At this moment, I might go back to the original.
+
 Code that we may not need anymore:
 
 minerals_table.py - will create a database containing many minerals along with wavelengths and reflectances (infrared region). When you "ask" for some minerals, those minerals' information will be returned. Still a work in progress
@@ -84,5 +86,7 @@ delete_db.py - would have deleted the database but this is not needed anymore as
 
 SPECIAL THANKS:
 Dr. Laura Rodriguez from the Origins and Habitability Lab at Jet Propulsion Laboratory for the MCR code. It was huge milestone in this project.
+
 Dr. Marc Neveu from NASA Goddard for the Europa salt data.
+
 Dr. Mathieu Lapôtre et al. for the Hapke unmixing model
