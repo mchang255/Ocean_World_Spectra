@@ -85,6 +85,7 @@ minerals_table.py - will create a database containing many minerals along with w
 delete_db.py - would have deleted the database but this is not needed anymore as we are using sql3ite not MySQL
 
 SPECIAL THANKS:
+
 Dr. Laura Rodriguez from the Origins and Habitability Lab at Jet Propulsion Laboratory for the MCR code. It was huge milestone in this project.
 
 Dr. Marc Neveu from NASA Goddard for the Europa salt data.
