@@ -91,3 +91,17 @@ Dr. Laura Rodriguez from the Origins and Habitability Lab at Jet Propulsion Labo
 Dr. Marc Neveu from NASA Goddard for the Europa salt data.
 
 Dr. Mathieu Lapôtre et al. for the Hapke unmixing model
+
+United States Geological Survey (USGS)
+
+Raman Research Used for Fun (RRUFF)
+
+Paul Johnson et al. for hydrohalite data
+
+Katrin Stephan et al. for water ice data
+
+Helen Maynard-Casely et al. for meridianiite data
+
+Martha Gilmore et al. for ikaite data
+
+
