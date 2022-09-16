@@ -1,5 +1,6 @@
 #The purpose of this code is to query minerals that we want (we input this in minerals.txt, NOT case sensitive) + their information
-#The program also plots the wavelength, reflectance data and returns a .txt file containing the data + info
+#In minerals.txt, write the mineral you wish query, only one per line
+#The program also plots the wavelength, reflectance data and returns a .txt file containing the data + info. All these files will outputted to a folder called "mineral_data"
 #To run this file, make sure you are in the same directory as the file and type "python query_minerals.py" in the terminal window
 #You can run this program as many times as you want
 
@@ -42,7 +43,7 @@ for w in range(len(minerals)):
         top += 'Sample ID: ' + result[2] + '\n'
         top += 'wavelengths (microns), reflectance'
         file_name = result[0] + '_' + result[2] + '.txt'
-        np.savetxt(mineral_path + "/" + file_name, data, fmt='%s', delimiter = ', ', header=top)
+        np.savetxt(mineral_path + "/" + file_name, data, fmt='%s', delimiter = '\t', header=top)
 
         #plotting data
         plt.plot(wavelengths, reflectances)
