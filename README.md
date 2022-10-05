@@ -86,7 +86,7 @@ delete_db.py - would have deleted the database but this is not needed anymore as
 
 SPECIAL THANKS:
 
-Dr. Laura Rodriguez from the Origins and Habitability Lab at Jet Propulsion Laboratory for the MCR code. It was huge milestone in this project.
+Dr. Laura Rodriguez from the Origins and Habitability Lab at Jet Propulsion Laboratory for the MCR code. It was a huge milestone in this project.
 
 Dr. Marc Neveu from NASA Goddard for the Europa salt data.
 
