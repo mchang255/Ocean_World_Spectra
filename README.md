@@ -1,6 +1,6 @@
-# JPL Code
+# Ocean World Spectra Code
 
-Where I upload everything JPL!
+Hello!
 
 This respository mainly concerns research in finding surface compositions of ocean worlds in our Solar System (Ceres, Europa, etc.)
 
